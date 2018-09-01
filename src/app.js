@@ -23,26 +23,32 @@ app.use(notFound);
 // Our Error Handling Middleware
 app.use(errorHandler);
 // Flag to know if we are up and going
-let isRunning = false;
 
 
-const server = {
+// module.exports = {
+//   start: port => app.listen(port, console.log('Listening on PORT', port)),
+//   stop: () => app.close(),
+//   server: app,
+// };
+
+let server;
+
+module.exports = {
   start: (port) => {
-    if(! isRunning) {
-      return app.listen(port, function () {
-        console.log('app is listening at port %s', port);
+    if(! server) {
+      server = app.listen(port, (err) => {
+        if(err) { throw err; }
+        console.log(`Server up on ${port}`);
       });
     }
     else {
       console.log('Server is already running');
     }
-    
   },
-  // stop: () => { 
-  //   isRunning = false;
-  //   console.log(server.connection);
-  //   server.connection.close();
-  // },
+  stop: () => {
+    server.close( () => {
+      console.log('Server has been stopped');
+    });
+  },
+  server: app,
 };
-
-export default server;
